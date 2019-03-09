@@ -1,13 +1,17 @@
 # These values are given in the task, and are used to make decisions.
-POSITIVE = 2
-NEGATIVE = 1
+import random
+
+YES = 2
+NO = 1
 
 
 class TreeNode(object):
     """
     This is a node in the tree, to be used to handle logic when building the tree.
+    Each node knows only which nodes are in its own subtree.
     """
-    #initiates with a dictionary to contain subtrees
+
+    # initiates with a dictionary to contain subtrees
     def __init__(self, attribute):
         self.subtree = {}
         self.attribute = attribute
@@ -23,7 +27,13 @@ class TreeNode(object):
 def random_importance():
     ## Shell Function
 
-    return 0
+    return random.randint(0, 10)
+
+
+def plurality_value(data):
+    ## Shell Function
+
+    pass
 
 
 def max_expected_value_importance():
@@ -32,17 +42,24 @@ def max_expected_value_importance():
     return 0
 
 
-def decision_tree_learning(training_set, target, attribute):
+def decision_tree_learning(training_set, attributes, parent_examples, importance_method):
     """
     Performs DTL on a given training set and node evaluation function
-    :param training_set:
-    :param target:
-    :param attribute:
-    :return: Decision tree
+
     """
 
     tree = 0
-    return tree
+    if training_set is None:
+        return plurality_value(parent_examples)
+
+    elif training_set.eval_classification() == 0:  # missing implementation
+        return  # what is a classification? This is all based on pseudocode which is not well written
+
+    elif attributes is None:
+        return plurality_value(training_set)
+    else:
+        #a = TreeNode(max())
+        pass
 
 
 def parse_training_data(file_name):
