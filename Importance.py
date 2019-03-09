@@ -1,3 +1,25 @@
+# These values are given in the task, and are used to make decisions.
+POSITIVE = 2
+NEGATIVE = 1
+
+
+class TreeNode(object):
+    """
+    This is a node in the tree, to be used to handle logic when building the tree.
+    """
+    #initiates with a dictionary to contain subtrees
+    def __init__(self, attribute):
+        self.subtree = {}
+        self.attribute = attribute
+
+    # TODO
+    def __repr__(self):
+        pass
+
+    def add_subtree(self, subtree, value):
+        self.subtree[value] = subtree
+
+
 def random_importance():
     ## Shell Function
 
@@ -10,8 +32,17 @@ def max_expected_value_importance():
     return 0
 
 
-def decision_tree_learning():
-    return
+def decision_tree_learning(training_set, target, attribute):
+    """
+    Performs DTL on a given training set and node evaluation function
+    :param training_set:
+    :param target:
+    :param attribute:
+    :return: Decision tree
+    """
+
+    tree = 0
+    return tree
 
 
 def parse_training_data(file_name):
@@ -35,7 +66,7 @@ def parse_training_data(file_name):
 def test_parse_training_data():
     """
     Validation method to check if parse_training_data works as expected.
-    :param file_name:
+    :param:
     :return:
     """
     print(parse_training_data("training.txt")[0:3])
