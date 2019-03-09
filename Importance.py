@@ -26,9 +26,7 @@ def parse_training_data(file_name):
         # this is now a list containing strings on the following format:
         # "a, b, c, d, e, f, g" where all variables are integers.
         for string in data:
-            temp_list = string.split("	")
-            for i in range(len(temp_list)):
-                temp_list[i] = int(temp_list[i])
+            temp_list = list(map(int, string.split("	")))
             return_list.append(temp_list)
     f.close()
     return return_list
@@ -40,7 +38,7 @@ def test_parse_training_data():
     :param file_name:
     :return:
     """
-    print(parse_training_data("training.txt")[0])
+    print(parse_training_data("training.txt")[0:3])
 
 
 test_parse_training_data()
