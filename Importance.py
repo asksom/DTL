@@ -1,5 +1,6 @@
 # These values are given in the task, and are used to make decisions.
 import random
+from math import log2
 
 YES = 2
 NO = 1
@@ -58,8 +59,14 @@ def decision_tree_learning(training_set, attributes, parent_examples, importance
     elif attributes is None:
         return plurality_value(training_set)
     else:
-        #a = TreeNode(max())
+        # a = TreeNode(max())
         pass
+
+
+def entropy(bool_var):
+    if bool_var == 1 or bool_var == 0:
+        return 0
+    return -bool_var * log2(bool_var) + (1 - bool_var) * log2(1 - bool_var)
 
 
 def parse_training_data(file_name):
