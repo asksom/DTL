@@ -71,9 +71,6 @@ def count_yes_and_no(examples):
     return yes, no
 
 
-def information_gain_from_attribute(yes, no, attribute):
-    pass
-
 
 # attribute is an index
 def remainder(attribute, examples):
