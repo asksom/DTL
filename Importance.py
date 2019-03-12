@@ -1,6 +1,6 @@
 # These values are given in the task, and are used to make decisions.
 import random
-from math import log2
+from math import log2, inf
 
 YES = 2
 NO = 1
@@ -23,6 +23,7 @@ class TreeNode(object):
 
     def add_subtree(self, subtree, value):
         self.subtree[value] = subtree
+
 
 class Example(object):
     """
@@ -47,21 +48,71 @@ def random_importance():
 def eval_classification(examples):
     classification = examples[0].class_
     for i in examples:
-        if i.class_!= classification:
-            return False
+        if i.class_ != classification: return False
     return True
 
-def max_expected_value_importance():
-    ## shell function
 
-    return 0
+def count_yes_and_no(examples):
+    """
+    Determines how many yeses and nos there are
+    To be used to determine information gain in
+    the actual non-random importance-implementation
+    :param examples: examples
+    :return: number of yes, number of no
+    """
+    yes = 0
+    no = 0
+    list_count = [x.class_ for x in examples]
+    for x in list_count:
+        if YES == x:
+            yes += 1
+        else:
+            no += 1
+    return yes, no
+
+
+def information_gain_from_attribute(yes, no, attribute):
+    pass
+
+
+# attribute is an index
+def remainder(attribute, examples):
+    distinct_values = set()
+    result = 0
+    for ex in examples: distinct_values.add(ex.attributes[attribute])
+
+    for val in distinct_values:
+        pk = 0
+        nk = 0
+        for e in examples:
+            if e.attribute[attribute] == val and e.class_ == YES:
+                pk += 1
+            elif e.attribute[attribute] == val and e.class_ == NO:
+                nk += 1
+        result += (pk + nk) / len(examples) * entropy(pk / (pk + nk))
+    return result
+
+
+# this needs to determine the expected information gain from each attribute
+# maybe done on index? Idk. IMPORTANT: Page 704 in the book
+def max_expected_value_importance(examples, attributes):
+    max_gain = -inf()
+    return_attribute = 0
+    yes, no = count_yes_and_no(examples)
+    for attribute in attributes:
+        gain = entropy(yes/(yes + no)) - remainder(attribute, examples)
+        if gain > max_gain:
+            return_attribute = attribute
+            max_gain = gain
+
+    return return_attribute
 
 
 def plurality_value(examples):
     """
     Takes in a list of Example objects and determines which is the most common value.
     :param examples: List of Example objects
-    :return: The most common value.
+    :return: The most common value. In this case that is either 1 or 2.
     """
     iterable_value_list = [example.class_ for example in examples]
     return max(set(iterable_value_list), key=iterable_value_list.count)
@@ -70,6 +121,8 @@ def plurality_value(examples):
 def decision_tree_learning(examples, attributes, parent_examples, importance_method):
     """
     Performs DTL on a given training set and node evaluation function
+
+WIP
 
     """
 
@@ -125,4 +178,7 @@ def test_parse_training_data():
     print(parse_training_data("training.txt")[0:3])
 
 
-test_parse_training_data()
+def test_plurality_value():
+    test_list = parse_training_data("training.txt")
+    obj_list = [Example(x[0:-1], x[-1]) for x in test_list]
+    print(plurality_value(obj_list), " should be 1")
