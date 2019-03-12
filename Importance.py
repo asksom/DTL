@@ -1,6 +1,6 @@
 # These values are given in the task, and are used to make decisions.
 import random
-from math import log2, inf
+from math import log2
 
 YES = 2
 NO = 1
@@ -46,6 +46,13 @@ def random_importance():
 
 
 def eval_classification(examples):
+    """
+    Evaluation function which determines if
+    there is a point in splitting.
+    Splitting is redundant if all are YES or all NO
+    :param examples:
+    :return: Boolean value, True if all values in example are the same
+    """
     classification = examples[0].class_
     for i in examples:
         if i.class_ != classification: return False
@@ -71,9 +78,15 @@ def count_yes_and_no(examples):
     return yes, no
 
 
-
 # attribute is an index
 def remainder(attribute, examples):
+    """
+    calculates the remainder function value for the
+    given attribute and its corresponding examples
+    :param attribute: Index, to be accessed from the example class
+    :param examples: examples to be evaluated.
+    :return:
+    """
     distinct_values = set()
     result = 0
     for ex in examples: distinct_values.add(ex.attributes[attribute])
@@ -93,11 +106,22 @@ def remainder(attribute, examples):
 # this needs to determine the expected information gain from each attribute
 # maybe done on index? Idk. IMPORTANT: Page 704 in the book
 def max_expected_value_importance(examples, attributes):
-    max_gain = -inf()
+    """
+    This method determines which attribute given the
+    current examples is to be split on. It does this by
+    taking the entropy of the example-set minus the remainder
+    for each attribute, then evaluates which is the greater value.
+    :param examples:
+    :param attributes:
+    :return:
+    """
+
+    # this needs not be too small, all actual values are at least 0
+    max_gain = -1
     return_attribute = 0
     yes, no = count_yes_and_no(examples)
     for attribute in attributes:
-        gain = entropy(yes/(yes + no)) - remainder(attribute, examples)
+        gain = entropy(yes / (yes + no)) - remainder(attribute, examples)
         if gain > max_gain:
             return_attribute = attribute
             max_gain = gain
