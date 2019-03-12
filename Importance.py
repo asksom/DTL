@@ -146,26 +146,28 @@ def decision_tree_learning(examples, attributes, parent_examples, importance_met
 WIP
 
     """
-
-    tree = 0
+    tree = TreeNode()
     if len(examples) == 0:
-        return plurality_value(parent_examples)
-
-    elif examples.eval_classification() == 0:  # missing implementation
-        return  # what is a classification? This is all based on pseudocode which is not well written
-
-    elif attributes is None:
-        return plurality_value(examples)
+        return TreeNode(plurality_value(parent_examples))
+    elif examples.eval_classification():  # missing implementation
+        return TreeNode(examples[0].class_)
+    elif len(attributes) == 0:
+        return TreeNode(plurality_value(examples))
     else:
-        # a = TreeNode(max())
-        pass
+        A = max_expected_value_importance(examples, attributes)
+        tree = TreeNode(A)
+        temp_list = list(filter(lambda a: a != A, attributes))
+        # Hard code: values are only 1 or 2; ideally this would be done differently
+        for vk in range(1, 3):
+            exs = list(filter(lambda e: e.attribute[A] == vk, examples))
+            # her er det def noe som ikke stemmer.
 
 
 def entropy(q):
     """
     Returns the impurity of the boolean variable q
     :param q:
-    :return:
+    :return: Numeric value of entropy/impurity
     """
     if q == 1 or q == 0:
         return 0
