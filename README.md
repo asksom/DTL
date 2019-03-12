@@ -1,3 +1,3 @@
-# Importance
-Two different versions of the Importance algorithm used for Decisions Tree Learning, as well as an implementation of the Decision Tree Learning algorithm.
+# Decision Tree Learning
+This is a simple implementation of the Decision Tree Learning algorithm with two different version of its Importance algorithm.
 This is done as part of the coursework for the course TDT4171 Methods in AI
