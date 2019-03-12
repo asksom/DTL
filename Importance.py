@@ -24,18 +24,32 @@ class TreeNode(object):
     def add_subtree(self, subtree, value):
         self.subtree[value] = subtree
 
+class Example(object):
+    """
+    This is an example, attributes is a list of all attributes.
+    """
+
+    def __init__(self, attributes, class_):
+        self.class_ = class_
+        self.attributes = attributes
+
 
 def random_importance():
+    """
+    Returns a number, where the largest is chosen
+    :return: A number, where the largest is chosen.
+    """
     ## Shell Function
 
     return random.randint(0, 10)
 
 
-def plurality_value(data):
-    ## Shell Function
-
-    pass
-
+def eval_classification(examples):
+    classification = examples[0].class_
+    for i in examples:
+        if i.class_!= classification:
+            return False
+    return True
 
 def max_expected_value_importance():
     ## shell function
@@ -43,30 +57,45 @@ def max_expected_value_importance():
     return 0
 
 
-def decision_tree_learning(training_set, attributes, parent_examples, importance_method):
+def plurality_value(examples):
+    """
+    Takes in a list of Example objects and determines which is the most common value.
+    :param examples: List of Example objects
+    :return: The most common value.
+    """
+    iterable_value_list = [example.class_ for example in examples]
+    return max(set(iterable_value_list), key=iterable_value_list.count)
+
+
+def decision_tree_learning(examples, attributes, parent_examples, importance_method):
     """
     Performs DTL on a given training set and node evaluation function
 
     """
 
     tree = 0
-    if training_set is None:
+    if len(examples) == 0:
         return plurality_value(parent_examples)
 
-    elif training_set.eval_classification() == 0:  # missing implementation
+    elif examples.eval_classification() == 0:  # missing implementation
         return  # what is a classification? This is all based on pseudocode which is not well written
 
     elif attributes is None:
-        return plurality_value(training_set)
+        return plurality_value(examples)
     else:
         # a = TreeNode(max())
         pass
 
 
-def entropy(bool_var):
-    if bool_var == 1 or bool_var == 0:
+def entropy(q):
+    """
+    Returns the impurity of the boolean variable q
+    :param q:
+    :return:
+    """
+    if q == 1 or q == 0:
         return 0
-    return -bool_var * log2(bool_var) + (1 - bool_var) * log2(1 - bool_var)
+    return -q * log2(q) + (1 - q) * log2(1 - q)
 
 
 def parse_training_data(file_name):
@@ -79,7 +108,7 @@ def parse_training_data(file_name):
         return_list = []
         data = f.readlines()
         # this is now a list containing strings on the following format:
-        # "a, b, c, d, e, f, g" where all variables are integers.
+        # "a, b, c, d, e, f, g, h" where all variables are integers.
         for string in data:
             temp_list = list(map(int, string.split("	")))
             return_list.append(temp_list)
