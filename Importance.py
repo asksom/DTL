@@ -1,7 +1,7 @@
-# These values are given in the task, and are used to make decisions.
 import random
 from math import log2
 
+# These values are given in the task, and are used to make decisions.
 YES = 2
 NO = 1
 
@@ -33,6 +33,9 @@ class Example(object):
     def __init__(self, attributes, class_):
         self.class_ = class_
         self.attributes = attributes
+
+    def __repr__(self):
+        return self.class_,self.attributes
 
 
 def random_importance():
@@ -95,9 +98,9 @@ def remainder(attribute, examples):
         pk = 0
         nk = 0
         for e in examples:
-            if e.attribute[attribute] == val and e.class_ == YES:
+            if e.attributes[attribute] == val and e.class_ == YES:
                 pk += 1
-            elif e.attribute[attribute] == val and e.class_ == NO:
+            elif e.attributes[attribute] == val and e.class_ == NO:
                 nk += 1
         result += (pk + nk) / len(examples) * entropy(pk / (pk + nk))
     return result
@@ -139,29 +142,35 @@ def plurality_value(examples):
     return max(set(iterable_value_list), key=iterable_value_list.count)
 
 
-def decision_tree_learning(examples, attributes, parent_examples, importance_method):
+def decision_tree_learning(examples, attributes, parent_examples, importance_method=max_expected_value_importance):
     """
     Performs DTL on a given training set and node evaluation function
-
-WIP
-
+    :param examples: examples, a list of Example objects
+    :param attributes: attributes, a list of length 0-6, which values of the same magnitude.
+    :param parent_examples: The examples the previous iteration used.
+    :param importance_method:
+    :return:
     """
-    tree = TreeNode()
     if len(examples) == 0:
         return TreeNode(plurality_value(parent_examples))
-    elif examples.eval_classification():  # missing implementation
+    elif eval_classification(examples):
         return TreeNode(examples[0].class_)
     elif len(attributes) == 0:
         return TreeNode(plurality_value(examples))
     else:
-        A = max_expected_value_importance(examples, attributes)
+        A = importance_method(examples, attributes)
         tree = TreeNode(A)
-        temp_list = list(filter(lambda a: a != A, attributes))
+        new_attribute_list = list(filter(lambda a: a != A, attributes))
+        # this is the new list of attributes to be carried over to the next iteration.
         # Hard code: values are only 1 or 2; ideally this would be done differently
         for vk in range(1, 3):
-            exs = list(filter(lambda e: e.attribute[A] == vk, examples))
-            # her er det def noe som ikke stemmer.
+            exs = list(filter(lambda e: e.attributes[A] == vk, examples))
+            subtree = decision_tree_learning(exs, new_attribute_list, examples)
+            tree.add_subtree(subtree, vk)
+        return tree
 
+
+# This function is based completely on the pseudocode provided on page 703 of the course book.
 
 def entropy(q):
     """
@@ -174,7 +183,7 @@ def entropy(q):
     return -q * log2(q) + (1 - q) * log2(1 - q)
 
 
-def parse_training_data(file_name):
+def parse_training_data(file_name="training.txt"):
     """
     Method reads training data to be used and places it into a list containing string
     :param file_name: name of training data file to be read.
@@ -192,6 +201,10 @@ def parse_training_data(file_name):
     return return_list
 
 
+def create_examples_from_data(list_of_examples):
+    return [Example(x[:-1], x[-1]) for x in list_of_examples]
+
+
 def test_parse_training_data():
     """
     Validation method to check if parse_training_data works as expected.
@@ -205,3 +218,14 @@ def test_plurality_value():
     test_list = parse_training_data("training.txt")
     obj_list = [Example(x[0:-1], x[-1]) for x in test_list]
     print(plurality_value(obj_list), " should be 1")
+
+
+def main():
+    examples = create_examples_from_data(parse_training_data())
+    tree = decision_tree_learning(examples, [0, 1, 2, 3, 4, 5, 6], examples)
+    #print(tree.subtree)
+
+
+if __name__ == "__main__":
+    main()
+main()
