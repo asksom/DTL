@@ -17,9 +17,8 @@ class TreeNode(object):
         self.subtree = {}
         self.attribute = attribute
 
-    # TODO
     def __repr__(self):
-        pass
+        return "Attribute: {0}, subtree: {1}".format(self.attribute, self.subtree)
 
     def add_subtree(self, subtree, value):
         self.subtree[value] = subtree
@@ -35,17 +34,16 @@ class Example(object):
         self.attributes = attributes
 
     def __repr__(self):
-        return self.class_,self.attributes
+        return self.class_, self.attributes
 
 
-def random_importance():
+def random_importance(examples, attributes):
     """
     Returns a number, where the largest is chosen
     :return: A number, where the largest is chosen.
     """
-    ## Shell Function
 
-    return random.randint(0, 10)
+    return attributes[random.randint(0, len(attributes))]
 
 
 def eval_classification(examples):
@@ -106,8 +104,6 @@ def remainder(attribute, examples):
     return result
 
 
-# this needs to determine the expected information gain from each attribute
-# maybe done on index? Idk. IMPORTANT: Page 704 in the book
 def max_expected_value_importance(examples, attributes):
     """
     This method determines which attribute given the
@@ -183,6 +179,25 @@ def entropy(q):
     return -q * log2(q) + (1 - q) * log2(1 - q)
 
 
+def predict_outcome(tree, dataset):
+    """
+    This method is to be called for each member of the test-set
+    It evaluates one example from the test against the tree's
+    prediction.
+    :param tree:
+    :param dataset:
+    :return: prediction
+    """
+    current_node = tree
+    while current_node.subtree:
+        current_node = current_node.subtree[dataset.attributes[current_node.attribute]]
+
+        # current_node.attribute = et tall, en index
+        # dataset.attributes = en liste med de gjenværende attributtene, en liste med tall
+        # current_node.subtree = en dict med subtrær.
+        return current_node.attribute
+
+
 def parse_training_data(file_name="training.txt"):
     """
     Method reads training data to be used and places it into a list containing string
@@ -220,10 +235,21 @@ def test_plurality_value():
     print(plurality_value(obj_list), " should be 1")
 
 
-def main():
+def test_max_gain_importance():
     examples = create_examples_from_data(parse_training_data())
-    tree = decision_tree_learning(examples, [0, 1, 2, 3, 4, 5, 6], examples)
-    #print(tree.subtree)
+    tree = decision_tree_learning(examples, list(range(0, 7)), examples, random_importance)
+
+    dataset = create_examples_from_data(parse_training_data("test.txt"))
+    score = 0
+    max_score = len(dataset)
+    for ex in dataset:
+        if ex.class_ == predict_outcome(tree, dataset[0]): score += 1
+        print(ex.class_,predict_outcome(tree, dataset[0]))
+    return "The tree got {0} of {1} correct".format(score, max_score)
+
+
+def main():
+    print(test_max_gain_importance())
 
 
 if __name__ == "__main__":
