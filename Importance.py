@@ -79,7 +79,6 @@ def count_yes_and_no(examples):
     return yes, no
 
 
-# attribute is an index
 def remainder(attribute, examples):
     """
     calculates the remainder function value for the
@@ -125,7 +124,6 @@ def max_expected_value_importance(examples, attributes):
         if gain > max_gain:
             return_attribute = attribute
             max_gain = gain
-    # print(return_attribute)
     return return_attribute
 
 
@@ -191,7 +189,6 @@ def predict_outcome(tree, dataset):
     """
     current_node = tree  #
     while len(current_node.subtree):
-        # current_node = current_node.subtree[dataset.attributes[current_node.attribute]]
         current_node = current_node.subtree[
             dataset.attributes[current_node.attribute]]
     return current_node.attribute
@@ -233,24 +230,11 @@ def test_plurality_value():
     obj_list = [Example(x[0:-1], x[-1]) for x in test_list]
     print(plurality_value(obj_list), " should be 1")
 
-"""
-def test_max_gain_importance():
-    examples = create_examples_from_data(parse_training_data())
-    tree = decision_tree_learning(examples, list(range(0, 7)), examples, max_expected_value_importance)
 
-    dataset = create_examples_from_data(parse_training_data("test.txt"))
-    score = 0
-    max_score = len(dataset)
-    for ex in dataset:
-        if ex.class_ == predict_outcome(tree, ex):
-            score += 1
-        print(ex.class_, predict_outcome(tree, ex))
-    return "The tree got {0} of {1} correct".format(score, max_score)
-"""
 
 def test_max_gain_importance():
-    training_data = create_examples_from_data(parse_training_data('data/training.txt'))
-    test_data = create_examples_from_data(parse_training_data('data/test.txt'))
+    training_data = create_examples_from_data(parse_training_data('training.txt'))
+    test_data = create_examples_from_data(parse_training_data('test.txt'))
     attributes = list(range(0, 7))
     tree = decision_tree_learning(
         training_data, attributes, training_data, max_expected_value_importance)
@@ -259,7 +243,7 @@ def test_max_gain_importance():
     correct_answers = 0
     incorrect_answers = 0
     for data_set in test_data:
-        print(data_set.class_, predict_outcome(tree, data_set))
+        # print(data_set.class_, predict_outcome(tree, data_set))
         if data_set.class_ == predict_outcome(tree, data_set):
             correct_answers += 1
         else:
@@ -269,8 +253,28 @@ def test_max_gain_importance():
         correct_answers, incorrect_answers))
 
 
+def test_random_importance():
+    training_data = create_examples_from_data(parse_training_data('training.txt'))
+    test_data = create_examples_from_data(parse_training_data('test.txt'))
+    attributes = list(range(0, 7))
+    tree = decision_tree_learning(
+        training_data, attributes, training_data, random_importance)
+
+    correct_answers = 0
+    incorrect_answers = 0
+    for data_set in test_data:
+        if data_set.class_ == predict_outcome(tree, data_set):
+            correct_answers += 1
+        else:
+            incorrect_answers += 1
+    print("Using the random importance function")
+    print("Correct answers: {}, incorrect answer: {}".format(
+        correct_answers, incorrect_answers))
+
+
 def main():
     test_max_gain_importance()
+    test_random_importance()
 
 
 if __name__ == "__main__":
