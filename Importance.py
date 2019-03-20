@@ -34,7 +34,7 @@ class Example(object):
         self.attributes = attributes
 
     def __repr__(self):
-        return self.class_, self.attributes
+        return "{0}, {1}".format(self.class_, self.attributes)
 
 
 def random_importance(examples, attributes):
@@ -90,7 +90,8 @@ def remainder(attribute, examples):
     """
     distinct_values = set()
     result = 0
-    for ex in examples: distinct_values.add(ex.attributes[attribute])
+    for ex in examples:
+        distinct_values.add(ex.attributes[attribute])
 
     for val in distinct_values:
         pk = 0
@@ -100,7 +101,7 @@ def remainder(attribute, examples):
                 pk += 1
             elif e.attributes[attribute] == val and e.class_ == NO:
                 nk += 1
-        result += (pk + nk) / len(examples) * entropy(pk / (pk + nk))
+        result += ((pk + nk) / len(examples)) * entropy(pk / (pk + nk))
     return result
 
 
@@ -124,7 +125,7 @@ def max_expected_value_importance(examples, attributes):
         if gain > max_gain:
             return_attribute = attribute
             max_gain = gain
-
+    # print(return_attribute)
     return return_attribute
 
 
@@ -142,7 +143,7 @@ def decision_tree_learning(examples, attributes, parent_examples, importance_met
     """
     Performs DTL on a given training set and node evaluation function
     :param examples: examples, a list of Example objects
-    :param attributes: attributes, a list of length 0-6, which values of the same magnitude.
+    :param attributes: attributes, a list of length 0-7, which values of the same magnitude.
     :param parent_examples: The examples the previous iteration used.
     :param importance_method:
     :return:
@@ -188,14 +189,12 @@ def predict_outcome(tree, dataset):
     :param dataset:
     :return: prediction
     """
-    current_node = tree
-    while current_node.subtree:
-        current_node = current_node.subtree[dataset.attributes[current_node.attribute]]
-
-        # current_node.attribute = et tall, en index
-        # dataset.attributes = en liste med de gjenværende attributtene, en liste med tall
-        # current_node.subtree = en dict med subtrær.
-        return current_node.attribute
+    current_node = tree  #
+    while len(current_node.subtree):
+        # current_node = current_node.subtree[dataset.attributes[current_node.attribute]]
+        current_node = current_node.subtree[
+            dataset.attributes[current_node.attribute]]
+    return current_node.attribute
 
 
 def parse_training_data(file_name="training.txt"):
@@ -234,24 +233,45 @@ def test_plurality_value():
     obj_list = [Example(x[0:-1], x[-1]) for x in test_list]
     print(plurality_value(obj_list), " should be 1")
 
-
+"""
 def test_max_gain_importance():
     examples = create_examples_from_data(parse_training_data())
-    tree = decision_tree_learning(examples, list(range(0, 7)), examples, random_importance)
+    tree = decision_tree_learning(examples, list(range(0, 7)), examples, max_expected_value_importance)
 
     dataset = create_examples_from_data(parse_training_data("test.txt"))
     score = 0
     max_score = len(dataset)
     for ex in dataset:
-        if ex.class_ == predict_outcome(tree, dataset[0]): score += 1
-        print(ex.class_,predict_outcome(tree, dataset[0]))
+        if ex.class_ == predict_outcome(tree, ex):
+            score += 1
+        print(ex.class_, predict_outcome(tree, ex))
     return "The tree got {0} of {1} correct".format(score, max_score)
+"""
+
+def test_max_gain_importance():
+    training_data = create_examples_from_data(parse_training_data('data/training.txt'))
+    test_data = create_examples_from_data(parse_training_data('data/test.txt'))
+    attributes = list(range(0, 7))
+    tree = decision_tree_learning(
+        training_data, attributes, training_data, max_expected_value_importance)
+
+    # tree.print_tree()
+    correct_answers = 0
+    incorrect_answers = 0
+    for data_set in test_data:
+        print(data_set.class_, predict_outcome(tree, data_set))
+        if data_set.class_ == predict_outcome(tree, data_set):
+            correct_answers += 1
+        else:
+            incorrect_answers += 1
+    print("Using the information gain importance function")
+    print("Correct answers: {}, incorrect answer: {}".format(
+        correct_answers, incorrect_answers))
 
 
 def main():
-    print(test_max_gain_importance())
+    test_max_gain_importance()
 
 
 if __name__ == "__main__":
     main()
-main()
